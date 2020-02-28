@@ -1,0 +1,227 @@
+{extend name="public/head" /}
+{block name="body"} 
+<style type="text/css">
+    .goodspic{width:60px;height: 60px;border-radius: 3px;}
+</style> 
+<div class="layui-card-header">角色管理</div>
+<div class="layui-card-body"> 
+	<div class="search-plugin">
+		<form class="search-form layui-form">
+		<div class="search-body">
+			{$search} 
+			<div class="search-btn">
+				<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" data-act="search"><i class="am-icon-search"></i>搜索</button> 
+				<button type="button"  data-act="add" class="layui-btn layui-btn-sm layui-btn-normal"><i class="am-icon-plus"></i>新增</button> 
+			</div>
+		</div>
+		</form>
+	</div>
+	<table class="layui-table" id="table-user"> 
+        <thead>
+            <tr> 
+                <th>No</th>
+                <th>名称</th> 
+                <th>状态</th> 
+                <th>操作</th> 
+            </tr>
+        </thead>
+        <tbody id="vubody">
+        	 
+            <tr v-for="(item,index) in roles"  > 
+                <td v-html="index*1+1"></td> 
+                <td v-html="item.name"></td> 
+             
+                <td> 
+                	 <span class="layui-badge layui-bg-green" v-if="item.status==1">启用</span>
+                    <span class="layui-badge layui-bg-black"  v-if="item.status!=1">停用</span>
+                </td> 
+                <td> 
+                     	<a  class="layui-btn layui-btn-xs" href="javascript:void(0);" @click="getDetail(index)" >
+                            <i class="am-icon-lock"></i> 后台权限
+                        </a>
+                        <a class="layui-btn layui-btn-xs" href="javascript:void(0);" @click="eidtrole(index)"  >
+                            <i class="am-icon-pencil"></i> 编辑
+                        </a>
+                        <a v-if="item.id!=1" class="layui-btn layui-btn-xs layui-btn-danger" href="javascript:void(0);" @click="delrole(index)" >
+                            <i class="am-icon-trash"></i> 删除
+                        </a> 
+                </td>
+            </tr>  
+        </tbody>
+        <tfoot>
+        	<tr>
+        		<td id="page-user" colspan="5">
+        			
+        		</td>
+        	</tr>
+        </tfoot>
+    </table> 
+    </div>
+</div>
+
+ 
+<script type="text/javascript">
+	var table=new TableModel({
+			url:"{:wurl($route)}",
+			id:"#table-user",
+			page:"#page-user",
+			form:".search-form",
+			extra:{
+				act:"data"
+			}
+		}); 
+	var vu=new Vue({
+		 el:"#vubody",
+        data:{
+            roles:[], 
+        },
+         methods:{  
+           	getDetail(index){
+				var id=vu.roles[index].id;
+				var text=vu.roles[index].name;
+				$.action({
+					url:"{:wurl($route)}",
+					type:"post",
+					dataType:"html", 
+					data:{rid:id,act:"getDetails"},
+					success:function(res){
+						$.poppage(res,function(){
+							var datas=$("#role-menu-form").serializeArray();
+							$.action({
+								url:"{:wurl($route)}",
+								type:"post",
+								data:datas, 
+								dataType:"json",
+								success:function(ret){
+									if(ret.status==1){
+										$.toast("保存成功");
+										setTimeout(function(){
+											$.layer.closeAll();
+										},1500)	
+										
+									}else{
+										$.alert(ret.error);
+									} 
+
+								}
+							})
+						},{title:text+" 的权限",width:"800px",showOk:true});
+						$.plusRender(); 
+					},
+					error:function(res){
+						$.poppage(res.responseText);
+
+					}
+				}) 
+
+			},
+			delrole:function(index){
+				var id=vu.roles[index].id; 
+				var name=vu.roles[index].name; 
+		        $.confirm("是否删除 "+ name +" ?",function(){
+		            $.action({
+						url:"{:wurl($route)}",
+						data:{act:"delrole",rid:id}, 
+						dataType:"json",
+						success:function(res){
+							if(res.status==1){
+								$.alert("删除成功");
+								setTimeout(function(){
+									table.doSearch(1);
+									$.layer.closeAll();
+								},2000)
+							}else{
+								$.alert(res.error);
+							}
+						}
+					});
+		        },{title:"删除确认",danger:1});
+			},
+			eidtrole:function(index){ 
+				var r=vu.roles[index];
+				var options=[
+					{name:'id',type:'hidden',value:r.id},
+					{name:'act',type:"hidden",value:"saveRole"}, 
+					{name:'name',placeholder:"",type:'text',label:"角色名称",value:r.name}, 
+					 
+					{name:"status",type:"select",label:"状态",value:r.status,options:[
+						{'text':"启用",value:"1"},{'text':"禁用",value:"0"}
+					]} 
+				]; 
+				$.prompts(options,function(data){  
+					$.action({
+						url:"{:wurl($route)}", 
+						data:data,
+						type:"post",
+						dataType:"json",
+						success:function(res){
+							if(res.status==1){
+								$.alert("修改成功");
+								setTimeout(function(){
+									table.doSearch(1);
+									$.layer.closeAll();
+								},2000)
+							}else{
+								$.alert(res.error);
+							}
+							
+						}
+					})
+				},{title:"编辑角色",height:"200px"})
+			}
+        }
+	})
+	function addrole(){  
+		var options=[
+			{name:'id',type:'hidden',value:0},
+			{name:'act',type:"hidden",value:"saveRole"}, 
+			{name:'name',placeholder:"",type:'text',label:"角色名称",value:""}, 
+			 
+			{name:"status",type:"select",label:"状态",value:1,options:[
+				{'text':"启用",value:"1"},{'text':"禁用",value:"0"}
+			]} 
+		]; 
+		$.prompts(options,function(data){  
+			$.action({
+				url:"{:wurl($route)}", 
+				data:data,
+				type:"post",
+				dataType:"json",
+				success:function(res){
+					if(res.status==1){
+						$.alert("修改成功");
+						setTimeout(function(){
+							table.doSearch(1);
+							$.layer.closeAll();
+						},2000)
+					}else{
+						$.alert(res.error);
+					}
+					
+				}
+			})
+		},{title:"编辑角色",height:"200px"})
+	}
+	$(function(){ 
+		$.searchRender();
+		
+		table.search=function(data){
+			if(data.status>0){
+				vu.roles=data.data 
+			}else{
+				$.alert(data.error)
+			} 
+		};
+		table.doSearch();
+		$(".search-btn button").unbind("click").bind("click",function(){
+            var act=$(this).data("act");
+            if(act=="add"){
+                addrole();
+            }else if(act=="search"){
+                table.doSearch(1);
+            }
+        })
+	})  
+	
+</script>
+{/block}

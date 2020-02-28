@@ -1,0 +1,291 @@
+{extend name="public/head" /}
+{block name="body"}
+<style type="text/css">
+    .goodspic{width:60px;height: 60px;border-radius: 3px;}
+    .layui-table{width: 100%;}
+    .menu-icon{margin-right: 5px;}
+    .menu-type{font-size:13px;color:#1E9FFF;}
+    .menu-type-api{color:#5eb95e;}
+    .menu-type-permit{color:#F37B1D;}
+</style> 
+<div class="layui-card-header">菜单管理</div>
+<div class="layui-card-body"> 
+	<div class="search-plugin"> 
+		<div class="search-btn" style="text-align: center;"> 
+			<button onclick="addmenu0()" class="layui-btn layui-btn-sm layui-btn-normal">新增</button> 
+		</div>
+	</div>
+	<table class="layui-table" id="table-user">
+        <thead>
+            <tr> 
+                <th>code</th>
+                <th>路由</th>
+                <th>名称</th>
+                <th>类型</th>
+                <th>排序</th> 
+                <th>执行动作</th> 
+                
+                <th>状态</th>
+                <th>操作</th> 
+            </tr>
+        </thead>
+        <tbody>
+        	{foreach $menus as $k => $v}
+            <tr  > 
+                <td>{$v['perm']}</td> 
+                 <td>{$v['route']}</td> 
+                <td><i class="{$v['icon']} menu-icon"></i>{$v['menu_name']}</td>
+                <td>
+                	{if condition="intval($v['type']) eq 1"}
+                	<span class="menu-type  ">菜单</span>
+                	{elseif condition="intval($v['type']) eq 2"/}
+                	<span class="menu-type menu-type-permit">权限</span>
+                	{elseif condition="intval($v['type']) eq 3"/}
+                	<span class="menu-type menu-type-api">api接口</span>
+                	{/if}
+                </td>
+                <td>{$v['sort']}</td>
+                <td>
+                	<?php echo !empty($v['url'])?$v['url']:$v['action'];?>
+                </td> 
+                <td>
+                	{if condition="intval($v['status']) eq 1"}
+                	<span class="menu-type menu-type-api">启用</span> 
+                	{else/}
+                	<span class="menu-type menu-type-permit">禁用</span>
+                	{/if}
+		                </td> 
+                <td>  
+
+                        	<a  href="javascript:void(0);" onclick="addmenu1(this)" data-pid="{$v['id']}" class="layui-btn layui-btn-xs" data-pname="{$v['menu_name']}">
+                                <i class="am-icon-pencil"></i> 添加菜单/权限
+                            </a> 
+                        <a href="javascript:void(0);" onclick="eidtmenu(this)" data-id="{$v['id']}" data-pid="0" data-pname="无" data-name="{$v['menu_name']}"  data-url="{$v['url']}" data-target="{$v['target']}" data-icon="{$v['icon']}" data-perm="{$v['perm']}" data-action="{$v['action']}" data-sort="{$v['sort']}" data-type="{$v['type']}" data-route="{$v['route']}" class="layui-btn layui-btn-xs">
+                            <i class="am-icon-pencil" ></i> 编辑
+                        </a>
+                        {if condition="$v['module_id'] neq 0 "}
+                        <a href="javascript:void(0);" data-id="{$v['id']}" data-name="{$v['menu_name']}"   class="delbtn layui-btn layui-btn-xs layui-btn-danger" onclick="delmenu(this)" >
+                            <i class="am-icon-trash"></i> 删除
+                        </a>
+                        {/if} 
+                </td>
+            </tr>
+            <?php if(count($v['children'])>0){?>
+            	{foreach $v['children'] as $k2 => $v2}
+                    <tr  > 
+                    	<td>{$v2['perm']}</td> 
+                    	 <td>{$v2['route']}</td> 
+                        <td><span style="padding:0px 25px;"></span><i class="{$v2['icon']} menu-icon"></i>{$v2['menu_name']}</td> 
+                        <td>
+                        	{if condition="intval($v2['type']) eq 1"}
+		                	<span class="menu-type  ">菜单</span>
+		                	{elseif condition="intval($v2['type']) eq 2"/}
+		                	<span class="menu-type menu-type-permit">权限</span>
+		                	{elseif condition="intval($v2['type']) eq 3"/}
+		                	<span class="menu-type menu-type-api">api接口</span>
+		                	{/if}
+                        </td>
+                        <td>{$v2['sort']}</td>
+                        <td><?php echo !empty($v2['url'])?$v2['url']:$v2['action'];?></td> 
+                        <td>
+                        	{if condition="intval($v2['status']) eq 1"}
+		                	<span class="menu-type menu-type-api">启用</span> 
+		                	{else/}
+		                	<span class="menu-type menu-type-permit">禁用</span>
+		                	{/if}
+                        </td> 
+                        <td> 
+                            	 <a  href="javascript:void(0);" onclick="addmenu1(this)" data-pid="{$v2['id']}" class="layui-btn layui-btn-xs" data-pname="{$v2['menu_name']}">
+                                <i class="am-icon-pencil"></i> 添加菜单/权限
+                            </a> 
+                                <a href="javascript:void(0);" onclick="eidtmenu(this)" data-id="{$v2['id']}" data-pid="{$v2['pid']}" data-name="{$v2['menu_name']}" data-pname="{$v['menu_name']}"  data-url="{$v2['url']}" data-target="{$v2['target']}" data-icon="{$v2['icon']}"  data-perm="{$v2['perm']}" data-action="{$v2['action']}"     data-type="{$v2['type']}" data-route="{$v2['route']}"  data-sort="{$v2['sort']}" class="layui-btn layui-btn-xs">
+                                    <i class="am-icon-pencil"></i> 编辑
+                                </a>
+                                 {if condition="$v2['module_id'] neq 0 "}
+                                <a href="javascript:void(0);" data-id="{$v2['id']}" data-name="{$v2['menu_name']}"   class="delbtn layui-btn layui-btn-xs layui-btn-danger" onclick="delmenu(this)" >
+                                    <i class="am-icon-trash"></i> 删除
+                                </a>
+                                {/if} 
+                        </td>
+                    </tr>
+                      <?php if(count($v2['children'])>0){?>
+            	{foreach $v2['children'] as $k3 => $v3}
+                    <tr  > 
+                    	<td>{$v3['perm']}</td> 
+                    	 <td>{$v3['route']}</td> 
+                        <td><span style="padding:0px 50px;"></span><i class="{$v3['icon']} menu-icon"></i>{$v3['menu_name']}</td> 
+                        <td>
+                        	{if condition="intval($v3['type']) eq 1"}
+		                	<span class="menu-type">菜单</span>
+		                	{elseif condition="intval($v3['type']) eq 2"/}
+		                	<span class="menu-type menu-type-permit">权限</span>
+		                	{elseif condition="intval($v3['type']) eq 3"/}
+		                	<span class="menu-type menu-type-api">api接口</span>
+		                	{/if}
+                        </td>
+                        <td>{$v3['sort']}</td>
+                        <td><?php echo !empty($v3['url'])?$v3['url']:$v3['action'];?></td> 
+                        <td>
+                        	{if condition="intval($v3['status']) eq 1"}
+		                	<span class="menu-type menu-type-api">启用</span> 
+		                	{else/}
+		                	<span class="menu-type menu-type-permit">禁用</span>
+		                	{/if}
+		                </td> 
+                        <td> 
+                            	 
+                                <a href="javascript:void(0);" onclick="eidtmenu(this)" data-id="{$v3['id']}" data-pid="{$v3['pid']}" data-name="{$v3['menu_name']}" data-pname="{$v2['menu_name']}"  data-url="{$v3['url']}" data-target="{$v3['target']}" data-icon="{$v3['icon']}"  data-perm="{$v3['perm']}" data-action="{$v3['action']}"     data-type="{$v3['type']}" data-route="{$v3['route']}"  data-sort="{$v3['sort']}" class="layui-btn layui-btn-xs">
+                                    <i class="am-icon-pencil"></i> 编辑
+                                </a>
+                                 {if condition="$v3['module_id'] neq 0 "}
+                                <a href="javascript:void(0);" data-id="{$v3['id']}" data-name="{$v3['menu_name']}"   class="delbtn layui-btn layui-btn-xs layui-btn-danger" onclick="delmenu(this)" >
+                                    <i class="am-icon-trash"></i> 删除
+                                </a>
+                                {/if} 
+                        </td>
+                    </tr>
+                {/foreach}
+            <?php } ?>
+                {/foreach}
+            <?php } ?>
+            {/foreach}
+           
+             
+            <!-- more data -->
+        </tbody>
+    </table>
+</div>  
+ 
+<script type="text/javascript">
+	var menus=JSON.parse('{:json_encode($menus)}');
+	function addmenu0(pid,pname){
+		var menu= new Array();
+		menu.push({text:"<span style='color:#999'>无</span>",value:0});
+		$.each(menus,function(i,v){
+			menu.push({text:v.menu_name,value:v.id});
+			$.each(v.children,function(i2,v2){
+				menu.push({text:"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+v2.menu_name,value:v2.id}); 
+			})
+		}) 
+		var options=[
+			{name:"p_id",label:"父级菜单",type:"select",value:pid,options:menu},
+			{name:'menu_name',placeholder:"请输入名称",type:'text',label:"名称"},
+
+			{name:'route',placeholder:"路由",type:'text',label:"路由"},
+
+			{name:'action',placeholder:"执行模块/控制器/方法",type:'text',label:"动作"},
+			{name:'perm',placeholder:"权限编码 code",type:'text',label:"编码"},
+			{name:'url',placeholder:"打开外部链接",type:'text',label:"外部链接"},
+			 
+			{name:'target',type:'select',label:"窗口",options:[
+				{text:"当前窗口",value:0},{text:"新窗口",value:1}
+			],value:0},
+			{name:'icon',placeholder:"css样式类",type:'text',label:"样式类"},
+			{name:'type',placeholder:"菜单类型",type:'select',label:"类型",options:[
+				{text:"菜单",value:"1"},{text:"权限",value:"2"},{text:"api",value:"3"}
+			]},
+			{name:'sort',placeholder:"整数，越大越靠前",type:'number',label:"排序"} 
+			 
+		];
+		 
+		$.prompts(options,function(data){
+			 
+			data.act="addmenu0";
+			$.action({
+				url:"{:wurl($route)}",
+				data:data,
+				type:"post", 
+				dataType:"json",
+				success:function(res){
+					if(parseInt(res.status)==1){
+						$.alert("添加成功");
+						setTimeout(function(){
+							history.go(0)
+						},2000)
+					}else{
+						setTimeout(function(){
+							$.alert(res.error);
+						},500)
+						
+					}
+					
+				}
+			})
+		},{title:"编辑菜单",height:"65%"})
+	}
+	function addmenu1(a){
+
+		var pid=$(a).attr("data-pid"),pname=$(a).attr("data-pname");
+		addmenu0(pid,pname); 
+	}
+
+	function eidtmenu(a){
+		 var menu= new Array();
+		menu.push({text:"<span style='color:#999'>无</span>",value:0});
+		$.each(menus,function(i,v){
+			menu.push({text:v.menu_name,value:v.id});
+			$.each(v.children,function(i2,v2){
+				menu.push({text:"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+v2.menu_name,value:v2.id}); 
+			})
+		}) 
+		var options=[
+			{name:'id',type:'hidden',value:$(a).attr("data-id")}, 
+			{name:"p_id",label:"父级菜单",type:"select",value:$(a).attr("data-pid"),options:menu},
+			{name:'menu_name',placeholder:"请输入名称",type:'text',label:"名称",value:$(a).attr("data-name")},
+			{name:'route',placeholder:"路由",type:'text',label:"路由",value:$(a).attr("data-route")},  
+			{name:'action',placeholder:"执行模块/控制器/方法",type:'text',label:"执行动作",value:$(a).attr("data-action")}, 
+			{name:'perm',placeholder:"权限验证码",type:'text',label:"编码",value:$(a).attr("data-perm")},
+			{name:'url',placeholder:"链接，不含http时按照tp路由处理",type:'text',label:"外部链接",value:$(a).attr("data-url")}, 
+			 
+			{name:'type',placeholder:"菜单类型",type:'select',label:"类型",value:$(a).attr("data-type"),options:[
+				{text:"菜单",value:"1"},{text:"权限",value:"2"},{text:"api",value:"3"}
+			],value:$(a).attr("data-type")},
+			{name:'target',type:'select',label:"窗口",options:[
+				{text:"当前窗口",value:0},{text:"新窗口",value:1}
+			],value:$(a).attr("data-target")},
+			{name:'icon',placeholder:"请输入名称",type:'text',label:"样式类名",value:$(a).attr("data-icon")},
+			{name:'sort',placeholder:"整数，越大越靠前",type:'number',label:"排序",value:$(a).attr("data-sort")} 
+			
+		];
+
+		$.prompts(options,function(data){
+
+			data.act="savemenu";
+			$.action({
+				url:"{:wurl($route)}",
+				data:data,
+				type:"post",
+				dataType:"json", 
+				success:function(res){
+					$.alert("修改成功");
+					setTimeout(function(){
+						history.go(0)
+					},2000)
+				}
+			})
+		},{title:"新增菜单",height:"65%"})
+	}
+	function delmenu(a){
+		var id=$(a).attr("data-id"),name=$(a).attr("data-name"); 
+		 
+        $.confirm("是否删除 "+name +" ?",function(){
+
+            $.action({
+				url:"{:wurl($route)}", 
+				type:"post", 
+				data:{id:id,act:"del"},
+				dataType:"json",
+				success:function(res){
+					if(res.status==1){
+						$.toast("删除成功");
+						setTimeout(function(){
+							history.go(0)
+						},2000)
+					}
+					
+				}
+			}) 
+        },{title:"提示"});
+	}
+</script>
+{/block}

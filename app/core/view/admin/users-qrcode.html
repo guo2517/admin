@@ -1,0 +1,10 @@
+<script type="text/javascript" src="_STATICP/js/jquery.qrcode.min.js"></script>
+<div id="bindqr" style="width:180px ;height: 180px;display:block;margin:20px auto;"></div>
+<script type="text/javascript"> 
+	 $("#bindqr").qrcode({
+	    render: "canvas", 
+	    width: 180, //宽度
+	    height:180, //高度
+	    text: "{$url}" //任意内容
+	});  
+</script>

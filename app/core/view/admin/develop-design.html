@@ -1,0 +1,149 @@
+{extend name="public/head" /}
+{block name="body"}
+<style type="text/css">
+	.layui-form-label{width: 120px!important;}
+	.layui-input-block{margin-left: 150px!important;}
+</style>
+
+<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="height: 100%;width:1280px;">
+   
+  <ul class="layui-tab-title">
+    <li class="layui-this">搜索条件</li>
+    <li>JSON</li> 
+    <li>Serialize</li> 
+    <li>Bejson</li> 
+     <!-- <li class="hide">baidu</li> -->
+  </ul>
+  <div class="layui-tab-content"  >
+     
+      <div class="layui-tab-item layui-show"> 
+        <form class="layui-form" id="form" action="{:wurl($route)}" method="post">
+        <input type="hidden" name="act" value="save" readonly />
+        <div class="layui-form-item">
+            <label class="layui-form-label">搜索名</label>
+            <div class="layui-input-block">
+              	<input type="text" lay-verify="required"  name="search_name" class="layui-input" /> 
+            </div>
+        </div> 
+    	  <div class="layui-form-item">
+            <label class="layui-form-label">字段名</label>
+            <div class="layui-input-block">
+              	<input type="text" lay-verify="required"  name="search_field" class="layui-input" /> 
+            </div>
+        </div> 
+         <div class="layui-form-item">
+            <label class="layui-form-label">placeholder</label>
+            <div class="layui-input-block">
+              <input type="text" name="placeholder" value="" class="layui-input"> 
+            </div>
+        </div> 
+        <div class="layui-form-item">
+            <label class="layui-form-label">选择菜单</label>
+            <div class="layui-input-block">
+               <select name="menu_id">
+               		{foreach $menus as $k=>$v }
+               		<option value="{$v['id']}">{$v['menu_name']}</option>
+               		{foreach $v['children'] as $k2=>$v2 }
+	               		<option value="{$v2['id']}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$v2['menu_name']}</option>  
+               		{/foreach}
+               		{/foreach}
+               </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">输入类型</label>
+            <div class="layui-input-block">
+             <select name="type" >
+             	<option value="1">普通输入框</option>
+              <option value="8">数字输入框</option>
+             	<option value="0">隐藏输入框</option>
+             	<option value="2">下拉选择框</option>
+             	<option value="3">日期 Y-m-d</option>
+             	<option value="4">日期 Y-m-d H:i:s</option>
+             	
+             	<option value="5">日期 Y-m</option>
+             	<option value="6">时间 H:i:s</option>
+             	<option value="7">年份 Y</option>
+             </select>
+            </div>
+        </div> 
+        <div class="layui-form-item">
+            <label class="layui-form-label">默认值</label>
+            <div class="layui-input-block">
+              <input type="text" name="default_val" value="" class="layui-input"> 
+            </div>
+        </div> 
+         <div class="layui-form-item">
+            <label class="layui-form-label">interface</label>
+            <div class="layui-input-block">
+             
+               <input type="text" name="interface" value="" class="layui-input"> 
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">可选值</label>
+            <div class="layui-input-block">
+             
+             	 <textarea class="layui-input" name="extend_val" rows="5" style="padding:10px 10px;width: 100%;resize: none;height: auto;min-height: 60px;" placeholder='例如json字符串：{"1":"启用","0":"禁用"}'></textarea>
+              
+            </div>
+        </div> 
+        
+        <div class="layui-form-item">
+            <label class="layui-form-label">可选值序列化</label>
+            <div class="layui-input-block">
+             
+             	 <input type="checkbox"  value="1" name="serialize" lay-skin="switch" lay-filter="switchQrlogin" lay-text="开启|关闭" <?php echo (isset($set['login']['qrcode'])&&intval($set['login']['qrcode'])==1)?"checked":'';?> > 
+            </div>
+        </div> 
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">添加方式</label>
+            <div class="layui-input-block">
+             
+               <input type="radio"  value="1" checked="" name="addtype" title="新增" > 
+               <input type="radio"  value="2"   name="addtype" title="覆盖" > 
+            </div>
+        </div> 
+    </div>
+    <div class="layui-tab-item">
+        
+        <div class="layui-form-item">
+          <label class="layui-form-label">JSON</label>
+          <div class="layui-input-block">  
+               <textarea name="content" class="layui-input" style="resize: none;height: 100px;padding:10px 10px;"></textarea> 
+          </div>
+        </div> 
+    </div> 
+    <div class="layui-tab-item">
+           
+        <div class="layui-form-item">
+            <label class="layui-form-label">字符串</label>
+            <div class="layui-input-block">
+               <textarea name="content" class="layui-input" style="resize: none;height: 100px;padding:10px 10px;"></textarea> 
+            </div>
+        </div>  
+
+    </div> 
+    <div class="layui-tab-item">
+         <iframe src="http://bejson.com" style="width: 100%;height: 500px;"></iframe>
+    </div>
+  
+    <div class="layui-tab-item">
+
+       
+    </div> 
+  </div>
+  <div style="width: 50%;padding:20px 20px;text-align: center;margin:0 auto;">
+      <button onclick="subcheck()" class="layui-btn layui-btn-normal">保存</button>
+  </div>
+</div>  
+  
+<script type="text/javascript">
+	function subcheck(){
+		if($.validEasy(".valid")){
+			$("#form").submit();
+		}
+	} 
+</script>
+{/block}

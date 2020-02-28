@@ -1,0 +1,215 @@
+{extend name="public/head" /}
+{block name="body"} 
+<style type="text/css">
+    .am-icon-unlock{margin-right: 5px}
+    .avatar{width: 50px ;height: 50px;border-radius: 50%;display: inline-block;vertical-align: top;}
+    .nickname{display: inline-block;vertical-align: top;line-height: 50px;padding:0px 20px;color:#999;}
+</style>
+<script type="text/javascript" src="_STATICP/js/md5.js"></script>
+<script type="text/javascript" src="_STATICP/js/jquery.qrcode.min.js"></script>
+    <input type="hidden" name="act" value="save" readonly /> 
+<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="height: 100%;">
+   
+  <ul class="layui-tab-title">
+    <li class="layui-this">基础信息</li>
+    
+    <li>更改密码</li> 
+    <li>绑定设置</li>   
+  </ul>
+  <div class="layui-tab-content"  >
+    <div class="layui-tab-item layui-show"> 
+
+        <form class="layui-form" action="{:wurl($route)}" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">微信昵称</label>
+            <div class="layui-input-block">
+              <?php if(isset($user['avatar'])&&strlen($user['avatar'])>10){ ?>
+               <img src="{$user['avatar']}" class="avatar">
+              <?php }?>
+              <div class="nickname">{$user['nickname']}</div>
+            </div>
+          </div> 
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+              <input type="text"   value="<?php echo isset($user['username'])?$user['username']:'';?>" readonly disabled autocomplete="off" placeholder="请输入名称" class="layui-input layui-disabled">
+            </div>
+        </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">真实姓名</label>
+            <div class="layui-input-block">
+               <input type="text" name="truename" value="<?php echo isset($user['truename'])?$user['truename']:'';?>"  autocomplete="off" placeholder="请输入名称" class="layui-input">
+            </div>
+          </div> 
+          <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-block">
+               <input type="text" name="mobile" value="<?php echo isset($user['mobile'])?$user['mobile']:'';?>"  lay-verify="required|phone"  autocomplete="off" placeholder="请输入名称" class="layui-input">
+            </div>
+          </div> 
+          <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+               <input type="text" name="email" value="<?php echo isset($user['email'])?$user['email']:'';?>" lay-verify="email" autocomplete="off" placeholder="请输入名称" class="layui-input">
+            </div>
+          </div> 
+          <div class="layui-form-item">
+            <label class="layui-form-label">生日</label>
+            <div class="layui-input-block">
+               <input type="text" name="birthday"  value="<?php echo isset($user['birthday'])?$user['birthday']:'';?>"  autocomplete="off" placeholder="请输入名称" class="layui-input input-date">
+            </div>
+          </div> 
+          <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <input type="radio" name="sex" value="1" title="男" <?php echo isset($user['sex'])&&intval($user['sex'])==1?"checked":'';?>>
+                <input type="radio" name="sex" value="2" title="女" <?php echo isset($user['sex'])&&intval($user['sex'])==2?"checked":'';?>>
+            </div>
+          </div> 
+          
+          <div class="layui-form-item">
+            <label class="layui-form-label">身份证</label>
+            <div class="layui-input-block"  >
+                  <input type="text" class="layui-input" name="idcard" value="<?php echo isset($user['idcard'])?$user['idcard']:'';?>"  placeholder="设置了身份证以后，生日和性别保存不生效">
+            </div>
+          </div> 
+            <div style="width:90%;padding:20px 20px;text-align: center;">
+              <button lay-submit lay-filter="*" class="layui-btn layui-btn-normal">保存</button>
+          </div>
+          <input type="hidden" name="act" value="save">
+          </form>
+    </div>
+    <div class="layui-tab-item">   
+        <form class="layui-form" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">原密码</label>
+            <div class="layui-input-block"  >
+                <input type="hidden" name="act" value="resetpwd">
+                <input type="password" class="layui-input" name="password" value="" autocomplete="off">
+            </div>
+        </div>  
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码</label>
+            <div class="layui-input-block"  >
+                  <input type="password" class="layui-input" name="newpass" value="" autocomplete="off">
+            </div>
+        </div>  
+        <div class="layui-form-item">
+            <label class="layui-form-label">确认密码</label>
+            <div class="layui-input-block"  >
+                  <input type="password" class="layui-input" name="newpass1" autocomplete="off">
+            </div>
+        </div>  
+        <div style="width:90%;padding:20px 20px;text-align: center;">
+              <button lay-submit lay-filter="*" class="layui-btn layui-btn-normal">保存</button>
+          </div>
+        </form>
+    </div>
+     <div class="layui-tab-item"> 
+           <div class="layui-form-item">
+            <label class="layui-form-label">公众号OpenID</label>
+            <div class="layui-input-block"  >
+                <input type="text" class="layui-input layui-disabled" readonly value="<?php echo isset($user['openid_wx'])?$user['openid_wx']:'';?>" style="width: 300px;display: inline-block;" autocomplete="off">
+                 <a href="javascript:void(0);" class="layui-btn  layui-btn-danger unbind"><i class="am-icon-unlock"></i>解绑</a>
+            </div>
+          </div> 
+          <div class="layui-form-item">
+            <label class="layui-form-label">小程序OpenID</label>
+            <div class="layui-input-block"  >
+                <input type="text" class="layui-input layui-disabled" readonly value="<?php echo isset($user['openid_we'])?$user['openid_we']:'';?>" style="width: 300px;display: inline-block;"  autocomplete="off">
+                 <a href="javascript:void(0);" class="layui-btn  layui-btn-danger unbind"><i class="am-icon-unlock"></i>解绑</a>
+            </div>
+          </div> 
+          <div class="layui-form-item">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-block"  >
+                <?php 
+        $url0=urlencode($siteurl."/redirect?from=wechat&act=binduser&uid=".$user['user_id']);
+        $url='https://open.weixin.qq.com/connect/oauth2/authorize?appid='.(isset($set['wechat'])?$set['wechat']['appid']:'').'&redirect_uri='.$url0.'&response_type=code&scope=snsapi_userinfo&state=binduser#wechat_redirect';?>
+               扫描二维码绑定微信：
+               <div id="qrcode" style="margin-top: 20px;"></div> 
+            </div>
+          </div> 
+    </div>
+
+    </div>
+ 
+    </div>
+  
+<script type="text/javascript">
+    $(function(){
+        
+        $(".unbind").bind("click",function(){
+          $.action({
+            url:"{:wurl($route)}",
+            data:{act:"unbind"},
+            success:function(ret){
+              if(ret.status>0){
+                  $.toast(ret.msg)
+                  setTimeout(function(){
+                     window.location.reload();
+                  },1500)
+              }else{
+                  $.alert(ret.error)
+              } 
+            }
+          })
+        })
+        $("#qrcode").qrcode({
+            render: "canvas", 
+            width: 200, //宽度
+            height:200, //高度
+            text: "{$url}" //任意内容
+        }); 
+        $.laydate.render({
+            elem:".input-date",
+            type:"date",
+            value:"<?php echo isset($user['birthday'])?$user['birthday']:'';?>"
+        })
+        $.form.on('submit(*)', function(data){
+            if(data.field.password.length<6||data.field.password.length>20){
+              $.toast("密码长度不对");return false;
+            }
+            if(data.field.newpass.length<6||data.field.newpass.length>20){
+              $.toast("密码长度不对");return false;
+            }
+
+            if(data.field.act=="resetpwd"){
+                if(data.field.newpass!=data.field.newpass1){
+                    $.toast("两次密码不一致");
+                    return false;
+                } 
+                data.field.newpass=$.md5(data.field.newpass);
+                data.field.newpass1=$.md5(data.field.newpass1);
+                data.field.password=$.md5(data.field.password);
+                $.action({
+                    url:"{:wurl($route)}",
+                    data:data.field,
+                    success:function(ret){
+                        if(ret.status>0){
+                            $.toast(ret.msg);
+                            setTimeout(function(){
+                                window.location.reload();
+                            },1500)
+                        }else{
+                            $.alert(ret.error)
+                        }
+                    }
+                })
+            }else{
+                if(data.field.idcard.length>0){ 
+                    var ret=$.checkType(data.field.idcard,"idcard"); 
+                    if(!ret){
+                        $.toast("请输入正确的身份证号码");
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            return false;
+        });
+    })
+</script> 
+<script type="text/javascript" src="_JSP/md5.js"></script>
+ {/block}

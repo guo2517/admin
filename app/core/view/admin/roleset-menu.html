@@ -1,0 +1,82 @@
+<style type="text/css">
+	.role-menus{
+		text-align: left;
+	}
+	 
+	.role-menus table th{padding:10px 10px;}
+	.role-menus table td{vertical-align: top;padding:10px 10px;}
+	.role-menus .menu-td-1{border-left: 1px solid #f2f2f2;width: 200px;}
+	.role-menus .menu-td-2{width:calc(100% - 200px);}
+	.role-menus .td-3{width:150px;}
+	.role-menus	input{
+	    border-top: 0px;
+	    border-left: 0px;
+	    border-right: 0px;
+	    outline: none;
+	}
+	.role-menus .form-inline-margin{margin-bottom: 7px;}
+</style>
+<form id="role-menu-form" class="layui-form" method="post">
+	<input type="hidden" name="act" value="saveDetail">
+	<input type="hidden" name="rid" value="{$post['rid']}">
+<div class="role-menus">
+	
+	<table border="0" style="width:90%;">
+		<tr>
+			<th class="menu-td-1">菜单</th>
+			<th class="menu-td-2">二级菜单 \ 权限</th> 
+		</tr>
+	 
+		{foreach($menus as $k=>$v)}
+		<tr style="border:1px solid #f2f2f2">
+			<td class="menu-td-1">
+				<div class="form-inline-margin"> 
+					<table class="layui-table">
+						<tr>
+							<td>
+								<input type="checkbox" name="menu[{$v['id']}]" lay-skin="primary" title="{$v['menu_name']}" {$v['checked']}>
+							</td>
+						</tr>
+					</table>
+					 
+				 
+				</div> 
+			</td>
+			<td class="menu-td-2">
+				{if condition="count($v['children']) >0"}
+				{foreach($v['children'] as $k2=>$v2)} 
+				<table class="layui-table">
+					<tr>
+						<td class="td-3">
+							 <input type="checkbox" name="menu[{$v2['id']}]" class="check-all-{$v['id']}" lay-skin="primary" title="{$v2['menu_name']}"  id="check{$v2['id']}" {$v2['checked']}  name="menu[{$v2['id']}]" value="1"> 
+						</td>
+						
+							{if condition="count($v2['children']) >0"}
+							<td>
+							{foreach($v2['children'] as $k3=>$v3)} 
+							<input type="checkbox" name="menu[{$v3['id']}]" class="check-all-{$v['id']} check-all-{$v2['id']}" lay-skin="primary" title="{$v3['menu_name']}"  id="check{$v2['id']}" {$v3['checked']}  name="menu[{$v3['id']}]" value="1"> 
+							{/foreach}
+							</td>
+							{/if}
+						
+					</tr>
+				</table>
+			 
+				
+				{/foreach}
+				{/if}
+			</td>
+		</tr> 
+		
+		{/foreach}
+	 
+	</table>
+</div>
+
+</form>
+<script type="text/javascript"> 
+		$.form.render(); 
+	$.each($(".role-menus .checkall"),function(){
+		$.checkAll(this,".role-menus .check-all-"+$(this).data("id"));
+	}) 
+</script>

@@ -1,0 +1,74 @@
+{extend name="public/head" /}
+{block name="body"}
+<style type="text/css"> 
+</style>
+
+<div class="widget am-cf vueEl" >
+	<div class="widget-head am-cf">
+        <div class="widget-title am-fl">MySQL数据配置</div>
+        <div class="widget-function am-fr">
+            <a href="javascript:history.go(0);" class="am-icon-refresh"></a>
+        </div>
+    </div>
+    <div class="widget-body am-fr">
+ 	<form class="am-form tpl-form-line-form" action="{:wurl($route)}?&act=install" method="post" id="form"> 
+ 		<div class="am-form-group">
+            <label for="user-email" class="am-u-sm-3 am-form-label">地址<span class="tpl-form-line-small-title">Host</span></label>
+            <div class="am-u-sm-9">
+                <input type="text" name="db[hostname]" class="am-form-field tpl-form-no-bg required" valid="required" placeholder="必填" value="<?php echo isset($db)?$db['hostname']:''?>" >
+                <small></small>
+            </div>
+        </div> 
+         <div class="am-form-group">
+            <label for="user-email" class="am-u-sm-3 am-form-label">数据库名<span class="tpl-form-line-small-title">database</span></label>
+            <div class="am-u-sm-9">
+                <input type="text" name="db[database]" class="am-form-field tpl-form-no-bg required" valid="required" placeholder="必填" value="<?php echo isset($db)?$db['database']:''?>" >
+                <small></small>
+            </div>
+        </div> 
+         <div class="am-form-group">
+            <label for="user-email" class="am-u-sm-3 am-form-label">用户名<span class="tpl-form-line-small-title">username</span></label>
+            <div class="am-u-sm-9">
+                <input type="text" name="db[username]" class="am-form-field tpl-form-no-bg required" valid="required" placeholder="必填" value="<?php echo isset($db)?$db['username']:''?>" >
+                <small></small>
+            </div>
+        </div> 
+        <div class="am-form-group">
+            <label for="user-email" class="am-u-sm-3 am-form-label">密码<span class="tpl-form-line-small-title">password</span></label>
+            <div class="am-u-sm-9">
+                <input type="text" name="db[password]" class="am-form-field tpl-form-no-bg" placeholder="" value="<?php echo isset($db)?$db['password']:''?>" >
+                <small></small>
+            </div>
+        </div> 
+        <div class="am-form-group">
+            <label for="user-email" class="am-u-sm-3 am-form-label">端口号 <span class="tpl-form-line-small-title">port</span></label>
+            <div class="am-u-sm-9">
+                 <input type="text" name="db[prefix]" class="am-form-field tpl-form-no-bg" placeholder="默认3306" value="<?php echo isset($db)?$db['prefix']:'3306'?>" >
+                <small></small>
+            </div>
+        </div> 
+        <div class="am-form-group">
+            <label for="user-email" class="am-u-sm-3 am-form-label">表前缀 <span class="tpl-form-line-small-title">prefix</span></label>
+            <div class="am-u-sm-9">
+                 <input type="text" name="db[prefix]" class="am-form-field tpl-form-no-bg" placeholder="" value="<?php echo isset($db)?$db['prefix']:''?>" >
+                <small></small>
+            </div>
+        </div> 
+         
+
+        <div class="am-form-group">
+            <div class="am-u-sm-9 am-u-sm-push-3">
+                <button type="button" onclick="subcheck()" class="am-btn am-btn-primary tpl-btn-bg-color-success ">保存</button> 
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+<script type="text/javascript">
+	function subcheck(){
+		if($.validEasy(".required")){
+			$("#form").submit();
+		}
+	} 
+</script>
+{/block}

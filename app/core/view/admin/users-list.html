@@ -1,0 +1,177 @@
+{extend name="public/head" /}
+{block name="body"} 
+<div class="layui-card-header">用户管理</div>
+<div class="layui-card-body"> 
+    <div class="search-plugin">
+        <form class="search-form layui-form" >
+        <div class="search-body">
+            {$search} 
+            <div class="search-btn">
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" data-act="search"><i class="am-icon-search" ></i>搜索</button>
+                <?php if(isset($perm)&&isset($perm['add'])){?>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" data-act="add"><i class="am-icon-plus" ></i>新增</button> 
+                <?php }?>
+            </div>
+        </div>
+        </form>
+    </div>
+    <table class="layui-table" id="table-user"> 
+         <thead> 
+            <tr> 
+                <th>No</th>
+                <th  class="sort-field" data-field="code">用户ID</th> 
+                <th  class="sort-field" data-field="rid">角色</th>
+                
+                <th  class="sort-field" data-field="nickname">昵称</th> 
+                <th  class="sort-field" data-field="username">用户名</th> 
+                <th  class="sort-field" data-field="truename">姓名</th>
+                <th  class="sort-field" data-field="mobile">手机号</th> 
+                <th class="sort-field"  >状态</th>
+                <th class="sort-field" data-field="last_login">上次登录</th>
+                <th>操作</th> 
+            </tr>
+        </thead>
+        <tbody id="vubody">
+             <tr  v-for="(item,index) in users" class="gradeX" > 
+                <td v-html="index+1"></td> 
+                <td v-html="item.code"></td> 
+                <td v-html="item.role"></td> 
+                <td v-html="item.nickname"></td> 
+                <td v-html="item.username"></td> 
+                <td v-html="item.truename"></td>  
+                <td v-html="item.mobile"></td>  
+                <td >
+                    <span class="layui-badge layui-bg-green" v-if="item.status==1">启用</span>
+                    <span class="layui-badge layui-bg-black"  v-if="item.status!=1">停用</span>
+                </td>
+                <td v-html="item.last_login"></td>
+                <td> 
+                        <a href="javascript:void(0);" @click="edit(index)"  class="layui-btn layui-btn-xs"  >
+                            <i class="am-icon-pencil"></i> 编辑
+                        </a> 
+                        <a  v-if="item.openid_we.length>5||item.openid_wx.length>5" href="javascript:void(0);" @click="bind(index)"  class="layui-btn layui-btn-xs layui-btn-primary"  >
+                            <i class="am-icon-unlock"></i> 解绑微信
+                        </a>
+                        <a v-if="item.openid_we.length<6&&item.openid_wx.length<6" href="javascript:void(0);" @click="bind(index)" class="layui-btn  layui-btn-xs "   >
+                            <i class="am-icon-lock"></i> 绑定微信
+                        </a>
+                         <a v-if="item.status==1" href="javascript:void(0);" @click="sts(index,0)" class="layui-btn  layui-btn-xs layui-btn-danger"   >
+                            <i class="am-icon-lock"></i> 停用
+                        </a> 
+                        <a v-if="item.status!=1" href="javascript:void(0);" @click="sts(index,1)" class="layui-btn layui-btn-xs"   >
+                            <i class="am-icon-unlock"></i> 启用
+                        </a> 
+
+                </td>
+            </tr>  
+        </tbody>
+        <tfoot>
+            <tr>
+                <td id="page-user" colspan="11">
+                    
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div> 
+<script type="text/javascript">
+    var table=new TableModel({
+        url:"{:wurl($route)}",
+        id:"#table-user",
+        page:"#page-user",
+        form:".search-form",
+        extra:{
+            act:"data"
+        }
+    }); 
+    var vu=new Vue({
+         el:"#vubody",
+        data:{
+            users:[], 
+        },
+         methods:{  
+           edit:function(index){
+            var uid=vu.users[index].id; 
+            window.location.href="{:wurl($route)}&act=edit&uid="+uid
+           },
+           bind:function(index){
+            var uid=vu.users[index].id; 
+            if(vu.users[index].openid_we.length>5||vu.users[index].openid_we.length>5){//解绑
+                $.confirm("是否解绑？",function(){
+                   $.action({
+                        url:"{:wurl($route)}",
+                        data:{act:"bindqrcode",uid:uid,unbind:1},
+                        dataType:"json",
+                        success:function(ret){
+                             if(ret.status>0){
+                                    $.toast(ret.msg)
+                                setTimeout(function(){
+                                    table.doSearch();
+                                },1500)
+                            }else{
+                                $.alert(ret.error)
+                            } 
+                        }
+                    }) 
+                })
+                 
+            }else{
+                 $.action({
+                    url:"{:wurl($route)}",
+                    data:{act:"bindqrcode",uid:uid},
+                    dataType:"html",
+                    success:function(ret){
+                         $.poppage(ret,null,{title:"绑定微信",width:"400px",height:"330px"}); 
+                    }
+                })
+            }
+           
+           
+           },
+           sts:function(index,sts){
+            var uid=vu.users[index].id;
+                $.confirm("是否"+(sts==1?'启用':'停用')+" 用户ID: "+vu.users[index].code,function(){
+                     $.action({
+                        url:"{:wurl($route)}&uid="+uid,
+                        data:{uid:uid,act:"sts",sts:parseInt(sts)},
+                        success:function(ret){
+                            if(ret.status>0){
+                                $.toast(ret.msg)
+                                setTimeout(function(){
+                                    table.doSearch();
+                                },1500)
+                            }else{
+                                $.alert(ret.error)
+                            } 
+                        }
+                    })
+
+                });
+                
+               
+           }
+        }
+    })
+    $(function(){ 
+        
+        $.searchRender(); 
+        table.search=function(data){
+            if(data.status>0){
+                vu.users=data.data 
+            }else{
+                $.alert(data.error)
+            } 
+        };
+        table.doSearch();
+        $(".search-btn button").unbind("click").bind("click",function(){
+            var act=$(this).data("act");
+            if(act=="add"){
+                window.location.href="{:wurl($route)}?&act=add&uid=0"
+            }else if(act=="search"){
+                table.doSearch(1);
+            }
+        })
+    })  
+     
+</script>
+{/block}

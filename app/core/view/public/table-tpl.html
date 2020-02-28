@@ -1,0 +1,99 @@
+{extend name="public/head" /}
+{block name="body"} 
+<div class="layui-card-header">角色管理</div>
+<div class="layui-card-body"> 
+    <div class="search-plugin">
+        <form class="search-form layui-form">
+        <div class="search-body">
+            {$search} 
+            <div class="search-btn">
+                <button class="layui-btn layui-btn-sm layui-btn-normal"><i class="am-icon-search"></i>搜索</button>
+                <button class="layui-btn layui-btn-sm layui-btn-normal">新增</button>
+                <button class="layui-btn layui-btn-sm layui-btn-normal">导入</button>
+            </div>
+        </div>
+        </form>
+    </div>
+    <table class="layui-table" id="table-user"> 
+         <thead> 
+            <tr> 
+                <th>No</th>
+                <th  class="sort-field" data-field="rid">角色</th>
+                <th  class="sort-field" data-field="nickname">昵称</th> 
+                <th  class="sort-field" data-field="username">用户名</th>  
+                <th  class="sort-field" data-field="city">城市</th> 
+                <th>性别</th>  
+                <th>操作</th> 
+            </tr>
+        </thead>
+        <tbody id="vubody">
+             <tr  v-for="(item,index) in users" class="gradeX" > 
+                <td v-html="index+1"></td> 
+                <td v-html="item.role"></td> 
+                <td v-html="item.nickname"></td> 
+                <td v-html="item.username"></td>  
+                <td v-html="item.sex">  
+                     
+                </td>  
+                <td>
+                    <div class="tpl-table-black-operation">
+                        <a href="javascript:void(0);" @click="setRole(index)"   >
+                            <i class="am-icon-pencil"></i> 角色
+                        </a> 
+                    </div>
+                </td>
+            </tr>  
+        </tbody>
+        <tfoot>
+            <tr>
+                <td id="page-user" colspan="4">
+                    
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<script type="text/javascript">
+    var vu=new Vue({
+         el:"#vubody",
+        data:{
+            roles:[], 
+        },
+         methods:{   
+            eidtrole:function(index){ 
+                var r=vu.roles[index];
+                var options=[
+                    {name:'id',type:'hidden',value:r.id}, 
+                    {name:"status",type:"select",label:"状态",value:r.status,options:[
+                        {'text':"启用",value:"1"},{'text':"禁用",value:"0"}
+                    ]} 
+                ]; 
+                $.prompts(options,function(data){  
+                   
+                },{title:"编辑角色",height:"200px"})
+            }
+        }
+    })
+    $(function(){ 
+        $.searchRender();
+        var table=new TableModel({
+            url:"{:wurl($route)}",
+            id:"#table-user",
+            page:"#page-user",
+            form:".search-form",
+            extra:{
+                act:"data"
+            }
+        }); 
+        table.search=function(data){
+            if(data.status>0){
+                vu.roles=data.data 
+            }else{
+                $.alert(data.error)
+            } 
+        };
+        table.doSearch();
+    })  
+     
+</script>
+{/block}

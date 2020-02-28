@@ -1,0 +1,110 @@
+{extend name="public/head" /}
+{block name="body"} 
+<div class="layui-card-header">日志记录</div>
+<div class="layui-card-body"> 
+    <div class="search-plugin">
+        <form class="search-form layui-form">
+        <div class="search-body">
+            <?php echo isset($search)?$search:''?>
+            <div class="search-btn">
+                <button class="layui-btn layui-btn-sm layui-btn-normal"><i class="am-icon-search"></i>搜索</button>  
+            </div>
+        </div>
+        </form>
+    </div>
+    <table class="layui-table" id="table-log"> 
+         <thead> 
+            <tr> 
+                <th>No</th>
+                <th  class="sort-field" data-field="rid">时间</th>
+                <th  class="sort-field" data-field="nickname">摘要</th>
+                <th  class="sort-field" data-field="nickname">用户</th> 
+                <th  class="sort-field" data-field="username">详细</th>  
+                <th>操作</th> 
+            </tr>
+        </thead>
+        <tbody id="vubody">
+             <tr  v-for="(item,index) in logs" class="gradeX" > 
+                <td v-html="index+1"></td> 
+                <td v-html="item.time"></td>
+                <td v-html="item.action"></td>
+                <td >
+                	<span v-html="item.username"></span>
+                	<span v-html="item.code" class="layui-badge layui-bg-black" v-if="item.code!=null"></span>
+                </td> 
+                 
+                <td v-html="item.log"></td>  
+                <td>
+                    <div class="tpl-table-black-operation">
+                        <a href="javascript:void(0);" @click="detail(index)"   >
+                            <i class="am-icon-pencil"></i> 详细
+                        </a> 
+                    </div>
+                </td>
+            </tr>  
+        </tbody>
+        <tfoot>
+            <tr>
+                <td id="page-log" colspan="10">
+                    
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<script type="text/javascript">
+    var vu=new Vue({
+         el:"#vubody",
+        data:{
+            logs:[], 
+        },
+         methods:{  
+            detail:function(index){
+                var id=vu.logs[index].id;
+                var text=vu.logs[index].name;
+                $.action({
+                    url:"{:wurl($route)}",
+                    type:"post",
+                    dataType:"html", 
+                    data:{rid:id,act:"getDetails"},
+                    success:function(res){
+                        $.poppage(res,function(){
+                             
+                        },{title:"日志详情",width:"800px",showOk:true});
+                        $.form.render();
+                    },
+                    error:function(res){
+                        $.poppage(res.responseText);
+
+                    }
+                }) 
+
+            } 
+             
+        }
+    })
+    $(function(){ 
+        $.searchRender();
+         
+        var table=new TableModel({
+            url:"{:wurl($route)}",
+            id:"#table-log",
+            page:"#page-log",
+            sort:".sort-field",
+            form:".search-form",
+            extra:{
+                act:"data"
+            }
+        }); 
+        table.search=function(data){
+            if(data.status>0){
+                vu.logs=data.data 
+            }else{
+                $.alert(data.error)
+            } 
+        };
+        table.doSearch();
+    })  
+     
+</script>
+{/block}

@@ -1,0 +1,79 @@
+{extend name="public/head" /}
+{block name="body"}
+<form class="layui-form" action="{:wurl($route)}" method="post">
+    <input type="hidden" name="act" value="save" readonly /> 
+<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="height: 100%;">
+   
+  <ul class="layui-tab-title">
+    <li class="layui-this">公众号</li>
+    <li>小程序</li>  
+     <!-- <li class="hide">baidu</li> -->
+  </ul>
+  <div class="layui-tab-content"  >
+     <div class="layui-tab-item layui-show"> 
+          <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-block">
+              <input type="text" name="wechat[name]" value="<?php echo isset($set['wechat']['name'])?$set['wechat']['name']:'';?>"  autocomplete="off" placeholder="请输入名称" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">APPID</label>
+            <div class="layui-input-block">
+               <input type="text" name="wechat[appid]" value="<?php echo isset($set['wechat']['appid'])?$set['wechat']['appid']:'';?>"  autocomplete="off" placeholder="请输入名称" class="layui-input">
+            </div>
+          </div> 
+          <div class="layui-form-item">
+            <label class="layui-form-label">SECRET</label>
+            <div class="layui-input-block">
+               <input type="text" name="wechat[secret]" value="<?php echo isset($set['wechat']['secret'])?$set['wechat']['secret']:'';?>"  autocomplete="off" placeholder="请输入名称" class="layui-input">
+            </div>
+          </div> 
+          <div class="layui-form-item">
+            <label class="layui-form-label">ACCESS_TOKEN</label>
+            <div class="layui-input-block"  >
+                  <input type="text" class="layui-input" name="wechat[access_token]" value="<?php echo isset($set['wechat']['access_token'])?$set['wechat']['access_token']:'';?>" readonly="">
+            </div>
+          </div> 
+    </div>
+     <div class="layui-tab-item"> 
+         <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-block">
+              <input type="text" name="weapp[name]" value="<?php echo isset($set['weapp']['name'])?$set['weapp']['name']:'';?>"  autocomplete="off" placeholder="请输入名称" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">APPID</label>
+            <div class="layui-input-block">
+               <input type="text" name="weapp[appid]" value="<?php echo isset($set['weapp']['appid'])?$set['weapp']['appid']:'';?>"  autocomplete="off" placeholder="请输入名称" class="layui-input">
+            </div>
+          </div> 
+          <div class="layui-form-item">
+            <label class="layui-form-label">SECRET</label>
+            <div class="layui-input-block">
+               <input type="text" name="weapp[secret]" value="<?php echo isset($set['weapp']['secret'])?$set['weapp']['secret']:'';?>"  autocomplete="off" placeholder="请输入名称" class="layui-input">
+            </div>
+          </div> 
+          <div class="layui-form-item">
+            <label class="layui-form-label">ACCESS_TOKEN</label>
+            <div class="layui-input-block"  >
+                <input type="text" class="layui-input" name="weapp[access_token]" value="<?php echo isset($set['weapp']['access_token'])?$set['weapp']['access_token']:'';?>" readonly="">
+                
+            </div>
+          </div> 
+    </div>
+    </div>
+      <div style="width:90%;padding:20px 20px;text-align: center;">
+      <button onclick="subcheck()" class="layui-btn layui-btn-normal">保存</button>
+  </div>
+    </div>
+</form>  
+<script type="text/javascript">
+	function subcheck(){
+		if($.validEasy(".valid")){
+			$("#form").submit();
+		}
+	} 
+</script>
+{/block}

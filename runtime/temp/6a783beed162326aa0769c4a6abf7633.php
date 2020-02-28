@@ -1,0 +1,230 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:58:"/www/wwwroot/admin/public/../app/core/view/user/login.html";i:1581500422;}*/ ?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>管理系统</title>
+    <meta name="description" content="管理系统">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />   
+    <link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/static/font-awesome/css/font-awesome.css">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/layui/layui.all.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.plus.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.qrcode.min.js"></script>
+    <style type="text/css">
+       html,body{width:100%;height: 100%;margin:0 0;}
+       .panel-login{width:400px;height: 320px;position: absolute;top: calc(50% - 150px);right: calc(50% - 200px); }
+       .panel-bg{position:absolute;left: 0;top: 0;width: 100%;height: 100%;background-color: #ccc;opacity: 0.1;}
+       .panel-login form{width:100%;margin-top:30px;}
+       .bg-white{background-color: #fff;}
+       .panel-login .layui-input-block{width:200px;text-align: left;}
+       .panel-login .input-block .i,.panel-login .input-block .input{
+        display: inline-block;vertical-align: top;line-height: 38px;font-size: 16px;
+       } 
+       .panel-login .input-block .i{padding:0px 10px;color:#999;}
+       .panel-login .input-block .input{width:150px;border:none;padding-left: 0;}
+       .login-btn{width:50%;text-align:center;word-spacing: 3px;letter-spacing: 3px;}
+       .forget-btn{float: right;margin-top: 10px;}
+       .panel-login .layui-unselect{margin-top:0px!important;}
+       .remember-block{margin-bottom: 0px!important;}
+       .qrcode{margin:10px auto;}
+       .panel-login .layui-tab{margin:0 0;}
+       .panel-login .layui-tab-title li{width: calc(50% - 30px);}
+    </style>
+</head>
+
+<body >
+    <div class="panel-login">
+        <div class="panel-bg"></div>
+        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+          <ul class="layui-tab-title">
+             <?php if(isset($showfast)){ ?>
+            <li class="layui-this">用户登录</li>
+            <li><div class="qrlogin">快速登录</div></li> <?php }?>
+          </ul>
+          <div class="layui-tab-content"  >
+            <div class="layui-tab-item layui-show"> 
+        <form class="layui-form" action="">
+          <div class="layui-form-item">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-block input-block bg-white">
+              <i class="am-icon-user i"></i>
+              <input type="text" id="username" onkeydown="keyPress(this)" name="uname" placeholder="用户名" class="layui-input username input">
+
+            </div> 
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-block input-block bg-white">
+              <i class="i am-icon-lock"></i>
+              <input type="password" id="password" onkeydown="keyPress(this)" name="passwd"  placeholder="密码" autocomplete="off" class="input layui-input password"> 
+            </div>
+          </div>
+           <div class="layui-form-item remember-block"  >
+            <label class="layui-form-label"></label>
+            <div class="layui-input-block">
+              <input type="checkbox" name="remember" id="remember" lay-skin="primary" title="记住用户名" checked=""> 
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-block ">
+              <a href="javascript:void(0);"  class="layui-btn  layui-btn-normal login-btn">登录</a>
+              <a href="javascript:void(0);" class="forget-btn">忘记密码？</a>
+            </div>
+          </div>
+          
+          
+          </form>
+            </div>
+            <?php if(isset($showfast)){ ?>
+            <div class="layui-tab-item" style="text-align: center;">
+              <?php 
+        $url0=urlencode($siteurl."/redirect?from=wechat&act=userlogin&ticket=".(isset($ticket)?$ticket:''));
+        $url='https://open.weixin.qq.com/connect/oauth2/authorize?appid='.(isset($set['wechat'])?$set['wechat']['appid']:'').'&redirect_uri='.$url0.'&response_type=code&scope=snsapi_userinfo&state=userlogin#wechat_redirect';?>
+               <input type="hidden" value="<?php echo $url; ?>" id="qrurl" name="">
+               <div id="qrcode" class="qrcode"></div> 
+               <p style="color:#999;font-size: 13px;text-align: center;">二维码有效期5分钟</p>
+            </div> 
+            <?php }?>
+          </div>
+        </div> 
+        
+    </div>
+    <footer>
+        <a class="portal" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51010702001749" target="__blank"><img src="/static/images/portal.png" />蜀ICP备20001847号</a>
+    </footer> 
+    <script src="/static/js/md5.js" type="text/javascript"></script>
+</body>
+<script type="text/javascript">
+    function keyPress(a){
+
+        var event=window.event?window.event:event;   
+        if(event.keyCode==13){
+            if($(a).hasClass("username")){
+                $(".password")[0].focus();
+            }
+            if($(a).hasClass("password")){ 
+                $(".login-btn")[0].click();
+            }
+        }
+
+    }
+    $(function(){ 
+       <?php if(isset($showfast)){ ?>
+         $("#qrcode").qrcode({
+            render: "canvas", 
+            width: 200, //宽度
+            height:200, //高度
+            text: "<?php echo $url; ?>" //任意内容
+        }); 
+        <?php } ?>
+        var userlogin=localStorage.getItem("userlogin");
+        if(userlogin!=null){
+            try{
+                userlogin=JSON.parse(userlogin);  
+            }catch(e){
+                return 0;
+            } 
+            if(userlogin!=""&&typeof(userlogin.username)!="undefined"){
+                $("#username").val(userlogin.username); 
+                $("#remember").prop({checked:true}); 
+            } 
+        }
+        $.form.render();
+        $(".login-btn").bind("click",function(){
+            var password=$("#password").val();
+            if(password.length<6){
+              return false;
+            }
+            if(password.length<21){
+                password=$.md5(password);
+            } 
+            var username=$("#username").val();
+            $.action({
+                url:"<?php echo wurl('dologin'); ?>",
+                data:{username:username,password:password},
+                dataType:"json",
+                type:"post", 
+                success:function(ret){
+                    if(ret.status==1){
+                        var iscked=$(".remember-block .layui-form-checked").length;
+                        if(iscked>0){
+                            localStorage.setItem("userlogin",JSON.stringify({'username':username}));
+                        }else{
+                            localStorage.removeItem("userlogin");
+                        }
+                        $.loading(1500)
+                        setTimeout(function(){
+                            window.location.href="<?php echo wurl('index'); ?>";
+                        },1500)
+                    }else{
+                        $.toast(ret.error);
+                    }
+                }
+            })
+        });
+        $(".forget-btn").bind("click",function(){
+          $.action({
+            url:"<?php echo wurl('forgetpwd'); ?>",
+            success:function(html){
+              $.poppage(html,function(){
+                var data=$("#forget-form").serializeArray(); 
+                if($("#newpass-forget").val().length>20||$("#newpass-forget").val().length<6){
+                  $.alert("密码长度6~20位");
+                  return false;
+                }
+                data.push({name:"newpass",value:$.md5($("#newpass-forget").val())})
+                $.action({
+                  url:"<?php echo wurl('forgetpwd'); ?>",
+                  data:data,
+                  success:function(ret){
+                    if(ret.status==1){
+                      $.toast("已重置，请重新登录");
+                      setTimeout(function(){
+                        $.layer.closeAll();
+                      },1500)
+                    }else{
+                      $.alert(ret.error);
+                    }
+                  }
+                })
+              },{title:"忘记密码",width:"450px",height:"350px",close:1});
+            }
+          })
+          
+        })
+        var t=0;
+
+        var timer;
+        $(".qrlogin").bind("click",function(){
+            timer=setInterval(function(){
+            t=t+3;
+            if(t>180){
+              $("#qrcode").text("二维码已失效，请刷新页面")
+              clearInterval(timer);
+            }
+            $.action({
+              url:"<?php echo wurl('dologin'); ?>",
+              data:{act:"qrcode",ticket:"<?php echo $ticket; ?>"},
+              success:function(ret){
+                if(ret.status==1){
+                   $.loading(1500)
+                    setTimeout(function(){
+                        window.location.href="<?php echo wurl('index'); ?>";
+                    },1500)
+                }
+              }
+            })
+          },3000);
+        }) 
+    }) 
+</script>
+</html>
